@@ -1,3 +1,3 @@
-//Instructions for tuning the Window_Stepper_Control script.
+Window_Stepper_Control uses a stepper motor to open/close a window blind on a fixed timer that can be fine tuned by adjusting the .ino file. The script also includes button functionality for manual blind operation; if no buttons are installed the script will still work.
 
-1. 
+Window_Stepper_Control_Auto is a similar program that uses a photoresistor to automatically open/close the window based on light conditions.
