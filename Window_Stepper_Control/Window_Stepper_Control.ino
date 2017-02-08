@@ -24,15 +24,15 @@
 //32*64 steps per revolution of output shaft after gear reduction
 #define OutputRev 2048
 //Number of revolutions required to open/close blinds to desired position
-#define ReqRev 2
-//Blinds open @ 8am & close @ 5pm. 9h*3600s/h*1000ms/s = 32,400s
-//#define WaitToClose 9*3600*1000
-//Blinds close @ 5pm & open @ 8am. 15h*3600s/h*1000ms/s = 54,000s 
-//#define WaitToOpen 15*3600*1000
+#define ReqRev 4
+//Blinds open @ 8am & close @ 5pm. 9h*3600s/h*1000ms/s = 32,400ms
+#define WaitToClose 9*3600*1000
+//Blinds close @ 5pm & open @ 8am. 15h*3600s/h*1000ms/s = 54,000ms 
+#define WaitToOpen 15*3600*1000
 
 //Delete this and two next lines when done w/ testing
-#define WaitToClose 5000
-#define WaitToOpen 10000
+//#define WaitToClose 5000
+//#define WaitToOpen 10000
 
 //Pins used for push buttons
 const int ButtonOpen = 12;
@@ -40,9 +40,10 @@ const int ButtonClose = 13;
 
 /*-----( Declare Variables )-----*/
 int StepsToTake;
-bool blindstate = false; //true = open, false = closed
+bool blindstate = true; //true = open, false = closed
 bool buttonopen = false;
 bool buttonclose = false;
+//Used for state machine to track elapsed time.
 long prevmil = 0;
 //Keep track of the last automatic event. 0=closed, 1 = opened.
 int lastautoevent = 0;
@@ -59,8 +60,9 @@ Stepper small_stepper(MotorRev, 8, 10, 9, 11);
 
 void setup()
 {
-  Serial.begin(9600);
+  //Serial.begin(9600);
   //Set button pin modes to input
+  //Serial.println("Initializing...");
   pinMode(buttonopen, INPUT);
   pinMode(buttonclose, INPUT);
   //Serial.println("Setup Complete");
@@ -72,11 +74,12 @@ void loop()
   if (((currentmil - prevmil) >= WaitToOpen) && (lastautoevent == 0))
   {
     StepsToTake  =  OutputRev * ReqRev;  // Open blinds
-    small_stepper.setSpeed(500);   
+    small_stepper.setSpeed(700);   
     small_stepper.step(StepsToTake);
     //Change tracker variables
     blindstate = true;
     lastautoevent = 1;
+    //Serial.println("Blinds Open");
     prevmil = millis();
   }
   else if (((currentmil - prevmil) >= WaitToClose) && (lastautoevent == 1))   
@@ -87,6 +90,7 @@ void loop()
     //Change tracker variables
     blindstate = false;
     lastautoevent = 0;
+    //Serial.println("Blinds Closed");
     prevmil = millis();
   }
 }
