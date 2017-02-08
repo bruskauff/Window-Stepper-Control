@@ -24,15 +24,15 @@
 //32*64 steps per revolution of output shaft after gear reduction
 #define OutputRev 2048
 //Number of revolutions required to open/close blinds to desired position
-#define ReqRev 4
+#define ReqRev 1
 //Blinds open @ 8am & close @ 5pm. 9h*3600s/h*1000ms/s = 32,400ms
-#define WaitToClose 9*3600*1000
+//#define WaitToClose 9*3600*1000
 //Blinds close @ 5pm & open @ 8am. 15h*3600s/h*1000ms/s = 54,000ms 
-#define WaitToOpen 15*3600*1000
+//#define WaitToOpen 15*3600*1000
 
 //Delete this and two next lines when done w/ testing
-//#define WaitToClose 5000
-//#define WaitToOpen 10000
+#define WaitToClose 60000
+#define WaitToOpen 60000
 
 //Pins used for push buttons
 const int ButtonOpen = 12;
@@ -60,12 +60,12 @@ Stepper small_stepper(MotorRev, 8, 10, 9, 11);
 
 void setup()
 {
-  //Serial.begin(9600);
+  Serial.begin(9600);
   //Set button pin modes to input
-  //Serial.println("Initializing...");
+  Serial.println("Initializing...");
   pinMode(buttonopen, INPUT);
   pinMode(buttonclose, INPUT);
-  //Serial.println("Setup Complete");
+  Serial.println("Setup Complete");
 }
 
 void loop()
@@ -79,18 +79,18 @@ void loop()
     //Change tracker variables
     blindstate = true;
     lastautoevent = 1;
-    //Serial.println("Blinds Open");
+    Serial.println("Blinds Open");
     prevmil = millis();
   }
   else if (((currentmil - prevmil) >= WaitToClose) && (lastautoevent == 1))   
   {
     StepsToTake  =  - OutputRev * ReqRev;  // Close blinds  
-    small_stepper.setSpeed(500);
+    small_stepper.setSpeed(700);
     small_stepper.step(StepsToTake);
     //Change tracker variables
     blindstate = false;
     lastautoevent = 0;
-    //Serial.println("Blinds Closed");
+    Serial.println("Blinds Closed");
     prevmil = millis();
   }
 }
